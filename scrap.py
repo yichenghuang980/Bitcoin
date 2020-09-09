@@ -1,6 +1,13 @@
+import click
 
+@click.command()
+@click.option('--name')
 def marco(name):
     if name == "Marco":
-        return "Polo"
-    return "No Match"    
-print(marco("Marco"))
+        click.echo("Polo")
+    else:
+        click.echo("No Match")    
+
+
+if __name__ == '__main__':
+    marco()
