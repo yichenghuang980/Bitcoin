@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 
 @click.command()
 @click.option('--url')
-def scrap(url):
+def scrape(url):
     html_content = requests.get(url)
     try:
         html_content.raise_for_status()
@@ -43,4 +43,4 @@ def scrap(url):
 
 
 if __name__ == '__main__':
-    scrap()
+    scrape()

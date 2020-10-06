@@ -1,7 +1,7 @@
 from click.testing import CliRunner
-from scrap import scrap
+from scrape import scrape
 
 
-def test_marco():
+def test_scrape():
     runner = CliRunner()
-    result = runner.invoke(scrap, ['--url','https://coincodex.com/crypto/bitcoin/historical-data/'])
+    result = runner.invoke(scrape, ['--url','https://coincodex.com/crypto/bitcoin/historical-data/'])
