@@ -10,7 +10,7 @@ def scrap(url):
         html_content.raise_for_status()
         pass
     except Exception as e:
-        print('Unable to open web page')
+        print('Unable to access web page')
         return
     
     soup = BeautifulSoup(html_content.text, "lxml")
