@@ -3,7 +3,8 @@ import requests
 from bs4 import BeautifulSoup
 
 @click.command()
-@click.option('--url')
+@click.option('--url' )
+
 def scrape(url):
     html_content = requests.get(url)
     try:
