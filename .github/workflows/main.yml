@@ -27,6 +27,9 @@ jobs:
         run: |
           make install
       - name: Lint with Pyint
+      - name: fromat with python black
+        run: |
+          make format
         run: |
           make test
       - name: Test with pytest
