@@ -2,3 +2,5 @@ pylint
 pytest
 pytest-cov
 click
+requests
+bs4
