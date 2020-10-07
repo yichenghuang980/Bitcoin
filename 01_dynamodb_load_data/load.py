@@ -1,7 +1,8 @@
-from decimal import Decimal
+from decimal import Rounded
 import json
 import boto3
 import pandas as pd
+
 
 dynamodb = boto3.resource('dynamodb')
 
@@ -11,19 +12,22 @@ def convert(filename):
     for index, row in data.iterrows():
         newDict = {'Date':'','Price':''}
         newDict['Date'] = row['Date']
-        newDict['Price'] = Decimal(row['Close'])
+        newDict['Price'] = row['Close']
         listOfDict.append(newDict)
         pass
     return listOfDict
 
 def load(bitcoin, dynamodb):
-   
     table = dynamodb.Table('bitcoin')
-    for entry in bitcoin:
-        date = entry['Date']
-        price = entry['Price']
-        print("Adding date:", date, price)
-        table.put_item(Item=entry)
+    
+    for i in range(len(bitcoin)):
+        response = table.put_item(
+            Item={
+                'date': bitcoin[i]['Date'],
+                'name': "Bitcoin",
+                'price': Rounded(bitcoin[i]['Price'])
+            }
+        )
 
 if __name__ == '__main__':
     load(convert("btc.csv"), dynamodb)
