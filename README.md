@@ -5,7 +5,7 @@ This program is intended to build a serverless data engineering pipeline and fit
 to predict Bitcoin price. 
 First, It will scrape data from specific websites once a day and update the corresponding S3 bucket.
 Next, trigger the producer lambda and ask SQS to perform extractions of data.
-Afterwards, trigger the consumer lambda and interaction with SQS again to get data.
+Afterwards, trigger the consumer lambda.
 Lastly, connect with AWS SageMaker and fit a linear regression model and predict Bitcoin price next day.
 
 ## Tools and Services involved
