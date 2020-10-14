@@ -1,13 +1,13 @@
+import boto3
 import requests
 from bs4 import BeautifulSoup
+import random
 
-def scrape(url):
-    html_content = requests.get(url)
-  
+def demo(url, dynamodb, table):
+    html_content = requests.get()
     html_content.raise_for_status()
     
     soup = BeautifulSoup(html_content.text, "lxml")
-    print(soup.title.text)
     
     btc_table = soup.find('table', attrs = {'class': 'styled-table full-size-table'})
     btc_data = btc_table.tbody.find_all("tr")
@@ -17,8 +17,6 @@ def scrape(url):
     for td in btc_data[0].find_all("th"):
         # remove any newlines and extra spaces
         headings.append(td.text.replace('\n', ' ').strip())
-        print(headings)
-        pass
     
     data = {}
     # Get all the rows
@@ -31,5 +29,19 @@ def scrape(url):
         for td, th in zip(tr.find_all("td"), headings): 
             t_row[th] = td.text.replace('\n', '').strip().replace('$\u202f','')
         table_data.append(t_row)
-
-    print(table_data)
+        pass
+    table_data.pop(0)
+    
+    index = random.randint(0, len(table_data))
+    response = table.put_item(
+        Item={
+            'date': table_data[index]['Date'],
+            'name': "Bitcoin",
+            'price': table_data[index]['Close']
+        }
+    )
+    
+    return table_data[index]
+    
+if __name__ == '__main__':
+    demo("https://coincodex.com/crypto/bitcoin/historical-data/", boto3.resource('dynamodb'), boto3.resource('dynamodb').Table("bitcoin"))
