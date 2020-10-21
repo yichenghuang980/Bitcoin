@@ -11,24 +11,19 @@ data_location = 's3://{}/{}'.format(bucket.name, data_key)
     
 def convert(filename):
     
-    data = pd.read_csv(filename, compression = 'zip', lineterminator='\n', low_memory = False)
-    clean = data.drop(['Unnamed: 0', 'subreddit', 'created_utc', 'date', 'author'], axis = 1)
-    clean['label'] = 0
-    final = pd.DataFrame({})
-    final = final.append(clean[clean['score'] > 0].replace(0, 1))
-    final = final.append(clean[clean['score'] <= 0])
-    final = final.rename(columns = {'Unnamed: 0':'commentID'})
+    final = pd.read_csv(filename, low_memory = False)
     
     listOfDict = []
     
     for index, row in final.iterrows():
         newDict = {'Id':'','Date':'','body':'','label':''}
-        newDict['Id'] = row['commentID']
+        newDict['Id'] = str(row['commentID'])
         newDict['Date'] = row['datetime']
         newDict['text'] = row['body']
         newDict['label'] = row['label']
         listOfDict.append(newDict)
         pass
+    
     return listOfDict
 
 def load(dictName, dynamodb):
@@ -45,4 +40,4 @@ def load(dictName, dynamodb):
         )
 
 if __name__ == '__main__':
-    convert(data_location)
+    load(convert("sample.csv"), DYNAMODB)
