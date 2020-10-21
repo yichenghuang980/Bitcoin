@@ -2,10 +2,14 @@ import boto3
 import json
 import sys
 import os
- 
+import requests
+import datetime
+import re
+import bs4 as BeautifulSoup
+
 DYNAMODB = boto3.resource('dynamodb')
-TABLE = DYNAMODB.Table("comment")
-QUEUE = "producer"
+TABLE = DYNAMODB.Table("demoComment")
+QUEUE = "sentiment"
 SQS = boto3.client("sqs")
 
 # SETUP LOGGING
@@ -27,7 +31,7 @@ def scan_table(table):
     response = table.scan()
     items = response['Items']
     LOG.info(f"Found {len(items)} Items")
-    return items
+    return items[0:6]
 
 def send_sqs_msg(msg, queue_name, delay=0):
     """Send SQS Message
@@ -59,8 +63,31 @@ def send_emissions(table, queue_name):
         response = send_sqs_msg(item, queue_name=queue_name)
         LOG.debug(response)
         
+def scrape(url, table):
+    
+    html_content = requests.get(url)
+    html_content.raise_for_status() 
+    soup = BeautifulSoup(html_content.content, "lxml")
+    com_data = soup.find('div', attrs = {'class': 'review-list'})
+    review_dates = com_data.find_all('div', attrs = {'class': 'review-content-header__dates'})
+    review_date = review_dates[0].find('script').string
+    jsonObj = json.loads(review_date)
+    date = datetime.datetime.strptime(jsonObj['publishedDate'],"%Y-%m-%dT%H:%M:%SZ")
+    
+    review_cards = com_data.find_all('div', attrs = {'class': 'review-content__body'})
+    new = review_cards[0].text.strip().lstrip().replace('\n', '')
+    
+    response = table.put_item(
+    Item={
+        'date': str(date.strftime('%Y-%m-%d %H:%M:%S')),
+        'body': new
+    }
+    )
+
 def lambda_handler(event, context):
    
     extra_logging = {"table": TABLE, "queue": QUEUE}
     LOG.info(f"event {event}, context {context}", extra=extra_logging)
+    scrape('https://www.trustpilot.com/review/bitcoin.com', TABLE)
     send_emissions(table=TABLE, queue_name=QUEUE)
+    

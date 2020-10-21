@@ -16,26 +16,22 @@ def convert(filename):
     listOfDict = []
     
     for index, row in final.iterrows():
-        newDict = {'Id':'','Date':'','body':'','label':''}
-        newDict['Id'] = str(row['commentID'])
+        newDict = {'time':'','body':''}
         newDict['Date'] = row['datetime']
         newDict['text'] = row['body']
-        newDict['label'] = row['label']
         listOfDict.append(newDict)
         pass
     
     return listOfDict
 
 def load(dictName, dynamodb):
-    table = dynamodb.Table('comment')
+    table = dynamodb.Table('demoComment')
     
     for i in range(len(dictName)):
         response = table.put_item(
             Item={
-                'commentID': dictName[i]['Id'],
                 'datetime': dictName[i]['Date'],
-                'body': dictName[i]['text'],
-                'label': int(dictName[i]['label'])
+                'body': dictName[i]['text']
             }
         )
 

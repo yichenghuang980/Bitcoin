@@ -5,6 +5,7 @@ import os
 import requests
 from bs4 import BeautifulSoup
 from decimal import Decimal
+import datetime
  
 DYNAMODB = boto3.resource('dynamodb')
 TABLE = DYNAMODB.Table("bitcoin")
@@ -35,7 +36,13 @@ def scan_table(table):
     response = table.scan()
     items = response['Items']
     LOG.info(f"Found {len(items)} Items")
-    return items[0]
+    today = datetime.date.today()
+    yesterday = today - datetime.timedelta(days = 1)
+    transform = yesterday.strftime("%b-%d-%Y")
+    for daily in items:
+        if daily['date'] == str(transform):
+            return items[items.index(daily):(items.index(daily) + 1)]
+    return items[-1:]
 
 def send_sqs_msg(msg, queue_name, delay=0):
     """Send SQS Message
@@ -66,9 +73,50 @@ def send_emissions(table, queue_name):
         LOG.info(f"Sending item {item} to queue: {queue_name}")
         response = send_sqs_msg(item, queue_name=queue_name)
         LOG.debug(response)
-        
+        pass
+
+def scrape(url, dynamodb, table):
+    html_content = requests.get(url)
+    html_content.raise_for_status()
+    
+    soup = BeautifulSoup(html_content.text, "lxml")
+    
+    btc_table = soup.find('table', attrs = {'class': 'styled-table full-size-table'})
+    btc_data = btc_table.tbody.find_all("tr")
+    header = (btc_data[0].find_all("th"))
+    
+    headings = []
+    for td in btc_data[0].find_all("th"):
+        # remove any newlines and extra spaces
+        headings.append(td.text.replace('\n', ' ').strip())
+    
+    data = {}
+    # Get all the rows
+    table_data = []
+    for tr in btc_table.tbody.find_all("tr"): # find all tr's from table's tbody
+        t_row = {}
+        # t_row = {'Date': '', 'Open': '', 'High': '', 'Close': '', 'Volume': '', 'Market Cap': ''}
+
+        # find all td's(6) in tr and zip it with t_header
+        for td, th in zip(tr.find_all("td"), headings): 
+            t_row[th] = td.text.replace('\n', '').strip().replace('$\u202f','')
+        table_data.append(t_row)
+        pass
+    table_data.pop(0)
+    date_time_obj = datetime.datetime.strptime(table_data[0]['Date'], '%b %d, %Y')
+    newformat = date_time_obj.strftime('%b-%d-%Y')
+    
+    response = table.put_item(
+        Item={
+            'date': str(newformat),
+            'name': "Bitcoin",
+            'price': table_data[0]['Close']
+        }
+    )
+    
 def lambda_handler(event, context):
    
     extra_logging = {"table": TABLE, "queue": QUEUE}
     LOG.info(f"event {event}, context {context}", extra=extra_logging)
+    scrape("https://coincodex.com/crypto/bitcoin/historical-data/", DYNAMODB, TABLE)
     send_emissions(table=TABLE, queue_name=QUEUE)
