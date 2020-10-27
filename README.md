@@ -19,12 +19,14 @@ Import accumulated datasets from a certain period of web scraping and train a ma
 
 ## Complete Basic Work Flow
 First, producer lambda is trigger by CloudWatch and will scrape Bitcoin price once a day and community review every 10-20 mins from specific websites and update the corresponding DynamoDB tables and S3 buckets.
-Next, producer lambda function extracts data from DynamoDB and sends messages to SQS.
-Afterwards, consumer lambda function is triggered by the EventWatch and transforms messages from SQS queues.
-Then, interact with AWS Comprehend to gain sentment analyses.
-Lastly, connect with AWS S3 bucket and export data as .csv into it.
 
-![](C:/user/renha/Desktop/1.png?raw=true "Title")
+Next, producer lambda function extracts data from DynamoDB and sends messages to SQS.
+
+Afterwards, consumer lambda function is triggered by the EventWatch and transforms messages from SQS queues.
+
+Then, interact with AWS Comprehend to gain sentment analyses.
+
+Lastly, connect with AWS S3 bucket and export data as .csv into it.
 
 Train the SageMaker Machine Learning model with accumulated data and gain prediction.
 
