@@ -1,15 +1,18 @@
 # Bitcoin Price Prediction
 
 ## Introduction
-This repository contains code on building a serverless data engineering pipeline and fit a machine learning model
-to predict Bitcoin price.
+This repository contains code on building a serverless data engineering pipeline and fit a machine learning model to predict Bitcoin price.
+
 It consists of two parts:
 ### Part 1: Lambda
 It contains two sets of lambda function, .Price and .Text.
+
 producerPrice: triggered by CloudWatch presumably once a day to scrape the specific website, merge into DynamoDB to ensure uniqueness, and then send to SQS instance "producer".
+
 consumerPrice: triggered by EventWatch inside SQS instance "producer" to receive and rearrange messages into a dataframe and save as csv file into S3 bucket "ids706"
 
 producerText: triggered by CloudWatch presumably every 10 - 20 mins to scrape the specific Bitcoin community, merge into DynamoDB to ensure uniqueness, and then send to SQS instance "sentiment".
+
 consumerPrice: triggered by EventWatch inside SQS instance "sentiment" to receive and rearrange messages into a dataframe, interact with AWS Comprehend, and save the final sentiment analyses as .csv file into S3 bucket "ids706"
 ### Part 2: SageMaker
 Import accumulated datasets from a certain period of web scraping and train a machine learning model to predict Bitcoin price.
