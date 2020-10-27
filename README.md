@@ -24,6 +24,8 @@ Afterwards, consumer lambda function is triggered by the EventWatch and transfor
 Then, interact with AWS Comprehend to gain sentment analyses.
 Lastly, connect with AWS S3 bucket and export data as .csv into it.
 
+![](C:/user/renha/Desktop/1.png?raw=true "Title")
+
 Train the SageMaker Machine Learning model with accumulated data and gain prediction.
 
 ## Tools and Services involved
