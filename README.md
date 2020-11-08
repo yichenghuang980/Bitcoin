@@ -47,9 +47,23 @@ However, if not training models with the datasets, keep the EventWatch disabled 
 
 ## Website URL links
 Bitcoin price:
+
 https://coincodex.com/crypto/bitcoin/historical-data/
 https://coinmarketcap.com/currencies/bitcoin/historical-data/
 
-Bitcoin Community Reviews
+US Dollar Index:
+
+https://www.marketwatch.com/investing/index/dxy
+
+Standard Poor 500 Index:
+
+https://www.marketwatch.com/investing/index/spx
+
+Ethereum Price:
+
+https://coinmarketcap.com/currencies/ethereum/historical-data/
+
+Bitcoin Community Reviews:
+
 https://www.trustpilot.com/review/bitcoin.com
 https://www.investing.com/crypto/bitcoin/chat
