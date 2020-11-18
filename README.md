@@ -1,10 +1,13 @@
 # Bitcoin Price Prediction
 
+## Demo on Youtube
+[![](http://img.youtube.com/vi/BXOnH-wZqGg/0.jpg)](http://www.youtube.com/watch?v=BXOnH-wZqGg "Data Engineering Pipeline")
+
 ## Introduction
-This repository contains code on building a serverless data engineering pipeline and fit a machine learning model to predict Bitcoin price.
+This repository contains code on building a serverless data engineering pipeline and results from SageMaker machine learning models to predict Bitcoin price and cluster community labels.
 
 It consists of two parts:
-### Part 1: Lambda
+### Part 1: Lambda/Web Scraper
 It contains two sets of lambda function, .Price and .Text.
 
 producerPrice: triggered by CloudWatch presumably once a day to scrape the specific website, merge into DynamoDB to ensure uniqueness, and then send to SQS instance "producer".
@@ -15,7 +18,7 @@ producerText: triggered by CloudWatch presumably every 10 - 20 mins to scrape th
 
 consumerPrice: triggered by EventWatch inside SQS instance "sentiment" to receive and rearrange messages into a dataframe, interact with AWS Comprehend, and save the final sentiment analyses as .csv file into S3 bucket "ids706"
 ### Part 2: SageMaker
-Import accumulated datasets from a certain period of web scraping and train a machine learning model to predict Bitcoin price.
+Import accumulated datasets from a certain period of web scraping and train a linear time series model to predict Bitcoin price and LDA model to cluster community review.
 
 ## Complete Basic Work Flow
 First, producer lambda is trigger by CloudWatch and will scrape Bitcoin price once a day and community review every 10-20 mins from specific websites and update the corresponding DynamoDB tables and S3 buckets.
@@ -24,11 +27,11 @@ Next, producer lambda function extracts data from DynamoDB and sends messages to
 
 Afterwards, consumer lambda function is triggered by the EventWatch and transforms messages from SQS queues.
 
-Then, interact with AWS Comprehend to gain sentment analyses.
+Then, interact with AWS Comprehend to gain sentiment analysis.
 
 Lastly, connect with AWS S3 bucket and export data as .csv into it.
 
-Train the SageMaker Machine Learning model with accumulated data and gain prediction.
+Train the SageMaker Machine Learning model with accumulated data and gain prediction and cluster.
 
 ## Tools and Services involved
 The following aws services are included:
@@ -53,6 +56,7 @@ However, if not training models with the datasets, keep the EventWatch disabled 
 Bitcoin price:
 
 https://coincodex.com/crypto/bitcoin/historical-data/
+
 https://coinmarketcap.com/currencies/bitcoin/historical-data/
 
 US Dollar Index:
@@ -70,4 +74,5 @@ https://coinmarketcap.com/currencies/ethereum/historical-data/
 Bitcoin Community Reviews:
 
 https://www.trustpilot.com/review/bitcoin.com
+
 https://www.investing.com/crypto/bitcoin/chat
