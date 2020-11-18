@@ -21,6 +21,8 @@ consumerPrice: triggered by EventWatch inside SQS instance "sentiment" to receiv
 Import accumulated datasets from a certain period of web scraping and train a linear time series model to predict Bitcoin price and LDA model to cluster community review.
 
 ## Complete Basic Work Flow
+![workflow](https://github.com/yichenghuang980/Bitcoin/blob/master/30_results/workflow.png)
+
 First, producer lambda is trigger by CloudWatch and will scrape Bitcoin price once a day and community review every 10-20 mins from specific websites and update the corresponding DynamoDB tables and S3 buckets.
 
 Next, producer lambda function extracts data from DynamoDB and sends messages to SQS.
