@@ -1,5 +1,7 @@
 # Bitcoin Price Prediction
 
+[![](http://img.youtube.com/vi/BXOnH-wZqGg/0.jpg)](http://www.youtube.com/watch?v=BXOnH-wZqGg "Data Engineering Pipeline")
+
 ## Introduction
 This repository contains code on building a serverless data engineering pipeline and fit a machine learning model to predict Bitcoin price.
 
